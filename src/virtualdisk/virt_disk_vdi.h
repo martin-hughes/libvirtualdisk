@@ -81,6 +81,15 @@ namespace virt_disk
   };
 #pragma pack ( pop )
 
+  /// The magic number of .VDI files.
+  const uint32_t VDI_MAGIC_NUM = 0xbeda107f;
+
+  /// Constant representing variably sized .VDI files.
+  const uint32_t VDI_TYPE_NORMAL = 1;
+
+  /// Constant representing fixed-size .VDI files.
+  const uint32_t VDI_TYPE_FIXED_SIZE = 2;
+
   /// @brief Represents a VirtualBox VDI format disk image.
   ///
   /// This class is not directly exposed by including "virtualdisk.h", but can be instantiated directly if
@@ -94,6 +103,8 @@ namespace virt_disk
     virtual void read(void *buffer, uint64_t start_posn, uint64_t length, uint64_t buffer_length) override;
 
     virtual uint64_t get_length() override;
+
+    static bool is_vdi_format_file(std::string &filename);
 
   protected:
 
@@ -110,15 +121,6 @@ namespace virt_disk
     bool is_ok;
 
     // Magic numbers.
-
-    /// The magic number of .VDI files.
-    const uint32_t VDI_MAGIC_NUM = 0xbeda107f;
-
-    /// Constant representing variably sized .VDI files.
-    const uint32_t VDI_TYPE_NORMAL = 1;
-
-    /// Constant representing fixed-size .VDI files.
-    const uint32_t VDI_TYPE_FIXED_SIZE = 2;
 
     // Member functions.
 

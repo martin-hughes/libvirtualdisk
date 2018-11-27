@@ -1,4 +1,9 @@
 Import("env")
 
-lib = env.Library("libvirtualdisk", ["src/generic/virtual_disk.cpp", "src/vdi/vdi_disk.cpp"])
+lib = env.Library("libvirtualdisk",
+                  [
+                    "src/generic/virtual_disk.cpp",
+                    "src/vdi/vdi_disk.cpp",
+                    "src/vhd/vhd_disk.cpp",
+                  ])
 Return("lib")
