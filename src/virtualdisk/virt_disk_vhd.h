@@ -49,11 +49,37 @@ namespace virt_disk
     uint8_t reserved[427]; ///< Set to zero.
   };
   static_assert(sizeof(vhd_footer) == 512, "sizeof(vhd_footer) != 512, check compiler packing options");
+
+  struct vhd_parent_locator
+  {
+    uint8_t string[24];
+  };
+
+  struct vhd_dynamic_header
+  {
+    char cookie[8];
+    big_uint64_t data_offset;
+    big_uint64_t table_offset;
+    big_uint32_t header_version;
+    big_uint32_t max_table_entries;
+    big_uint32_t block_size;
+    big_uint32_t checksum;
+    uint8_t parent_unique_id[16];
+    big_uint32_t parent_time_stamp;
+    big_uint32_t reserved_1;
+    uint8_t parent_unicode_name[512];
+    vhd_parent_locator parent_locators[8];
+    uint8_t reserved_2[256];
+  };
+  static_assert(sizeof(vhd_dynamic_header) == 1024, "Sizeof vhd_dynamic_header wrong");
 #pragma pack (pop)
 
   /// The string that is always stored in vhd_footer::cookie.
   ///
   const uint8_t VHD_COOKIE[8] = {'c', 'o', 'n', 'e', 'c', 't', 'i', 'x'};
+
+  /// The string that is stored in the vhd_dynamic_header::cookie.
+  const uint8_t VHD_DYNAMIC_COOKIE[8] = {'c', 'x', 's', 'p', 'a', 'r', 's', 'e'};
 
   /// The only version of the VHD specification we support.
   ///
@@ -72,11 +98,17 @@ namespace virt_disk
 
     virtual uint64_t get_length() override;
 
-    static bool is_vhd_format_file(std::string &filename);
-
   protected:
     std::fstream backing_file;
     vhd_footer footer_copy;
     uint64_t total_file_length;
+    vhd_dynamic_header dynamic_header_copy;
+
+    uint16_t data_block_bitmap_bytes;
+    std::unique_ptr<boost::endian::big_uint32_t[]> block_allocation_table;
+
+    static_assert(sizeof(boost::endian::big_uint32_t) == sizeof(uint32_t), "Wrong endian type size");
+
+    virtual void read_block(void *buffer, uint64_t start_posn, uint64_t length);
   };
 };

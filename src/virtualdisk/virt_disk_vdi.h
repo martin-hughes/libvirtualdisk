@@ -104,8 +104,6 @@ namespace virt_disk
 
     virtual uint64_t get_length() override;
 
-    static bool is_vdi_format_file(std::string &filename);
-
   protected:
 
     /// The file object representing the actual file we're treating as a virtual machine hard disk.

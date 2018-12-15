@@ -138,44 +138,4 @@ namespace virt_disk
   {
     return this->file_header.disk_size;
   }
-
-  /// @brief Is the given file a VDI format file?
-  ///
-  /// @param filename The name of the file to check
-  ///
-  /// @return True if this a file in the VDI format, false otherwise.
-  bool vdi_disk::is_vdi_format_file(std::string &filename)
-  {
-    std::fstream test_file{filename, std::fstream::binary | std::fstream::in | std::fstream::out};
-    vdi_header test_header;
-
-    if (!test_file)
-    {
-      throw std::fstream::failure("Failed to open backing file");
-    }
-
-    test_file.exceptions(std::fstream::failbit | std::fstream::eofbit | std::fstream::badbit);
-
-    try
-    {
-      test_file.seekg(0);
-      test_file.read(reinterpret_cast<char *>(&test_header), sizeof(vdi_header));
-    }
-    catch (std::fstream::failure &f)
-    {
-      return false;
-    }
-
-    if ((test_header.magic_number == VDI_MAGIC_NUM) &&
-        (test_header.version_major == 1) &&
-        (test_header.version_minor == 1) &&
-        (test_header.image_block_extra_size == 0) &&
-        ((test_header.file_type == VDI_TYPE_NORMAL) ||
-          (test_header.file_type == VDI_TYPE_FIXED_SIZE)))
-    {
-      return true;
-    }
-
-    return false;
-  }
 } // namespace virt_disk.

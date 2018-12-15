@@ -11,28 +11,24 @@
 
 namespace
 {
-  typedef std::function<bool(std::string)> format_test_fn;
   typedef std::function<virt_disk::virt_disk *(std::string)> disk_constructor;
 
-  struct format_constructor_pair
+  struct format_info
   {
-    format_test_fn is_format_fn;
     disk_constructor constructor_fn;
   };
 
-  format_constructor_pair known_types[] =
+  format_info known_types[] =
     {
       {
-        virt_disk::vdi_disk::is_vdi_format_file,
         [](std::string f) { return dynamic_cast<virt_disk::virt_disk *>(new virt_disk::vdi_disk(f)); }
       },
       {
-        virt_disk::vhd_disk::is_vhd_format_file,
         [](std::string f) { return dynamic_cast<virt_disk::virt_disk *>(new virt_disk::vhd_disk(f)); }
       },
     };
 
-  const uint32_t NUM_FORMATS = sizeof(known_types) / sizeof(format_constructor_pair);
+  const uint32_t NUM_FORMATS = sizeof(known_types) / sizeof(format_info);
 }
 
 namespace virt_disk
@@ -49,10 +45,17 @@ namespace virt_disk
   {
     for (int i = 0; i < NUM_FORMATS; i++)
     {
-      format_constructor_pair j = known_types[i];
-      if (j.is_format_fn(filename))
+      try
       {
-        return j.constructor_fn(filename);
+        virt_disk *disk = known_types[i].constructor_fn(filename);
+        if (disk != nullptr)
+        {
+          return disk;
+        }
+      }
+      catch (std::fstream::failure &fault)
+      {
+        continue;
       }
     }
 
