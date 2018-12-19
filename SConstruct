@@ -28,8 +28,8 @@ else:
 main_lib = env.SConscript("SConscript-Library", "env", variant_dir = "output", duplicate = 0)
 
 if not linux_build:
-  env.SideEffect("output\\libvirtualdisk.idb", tests_obj)
-  env.SideEffect("output\\libvirtualdisk.pdb", tests_obj)
+  env.SideEffect("output\\libvirtualdisk.idb", main_lib)
+  env.SideEffect("output\\libvirtualdisk.pdb", main_lib)
 
 if linux_build:
   # Offer the option to install on a Linux machine.
