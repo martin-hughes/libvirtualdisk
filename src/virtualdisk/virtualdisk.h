@@ -41,6 +41,17 @@ namespace virt_disk
     /// @param buffer_length The maximum length of buffer, in bytes.
     virtual void read(void *buffer, uint64_t start_posn, uint64_t length, uint64_t buffer_length) = 0;
 
+    /// @brief Write to the virtual machine disk.
+    ///
+    /// @param buffer The buffer to write to disk.
+    ///
+    /// @param start_posn The position on the disk to begin writing at.
+    ///
+    /// @param length The number of bytes to write. Must be less than, or equal to, buffer_length.
+    ///
+    /// @param buffer_length The total length of the buffer. Must be equal to, or greater than, length.
+    virtual void write(const void *buffer, uint64_t start_posn, uint64_t length, uint64_t buffer_length) = 0;
+
     /// @brief Get the size of the virtual disk, in bytes
     ///
     /// @return The size of the virtual disk, in bytes.

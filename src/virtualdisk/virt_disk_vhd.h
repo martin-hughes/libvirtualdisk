@@ -50,26 +50,30 @@ namespace virt_disk
   };
   static_assert(sizeof(vhd_footer) == 512, "sizeof(vhd_footer) != 512, check compiler packing options");
 
+  /// @brief A string to help us locate the parts of a differencing VHD file. Unused by this library at present.
+  ///
   struct vhd_parent_locator
   {
-    uint8_t string[24];
+    uint8_t string[24]; ///< The helper string.
   };
 
+  /// @brief The header used in a dynamic VHD file.
+  ///
   struct vhd_dynamic_header
   {
-    char cookie[8];
-    big_uint64_t data_offset;
-    big_uint64_t table_offset;
-    big_uint32_t header_version;
-    big_uint32_t max_table_entries;
-    big_uint32_t block_size;
-    big_uint32_t checksum;
-    uint8_t parent_unique_id[16];
-    big_uint32_t parent_time_stamp;
-    big_uint32_t reserved_1;
-    uint8_t parent_unicode_name[512];
-    vhd_parent_locator parent_locators[8];
-    uint8_t reserved_2[256];
+    char cookie[8]; ///< Should be set to VHD_DYNAMIC_COOKIE.
+    big_uint64_t data_offset; ///< The offset of the next header in the chain - unused by the current VHD spec.
+    big_uint64_t table_offset; ///< The absolute byte offset of the block allocation table.
+    big_uint32_t header_version; ///< Should be set to VHD_SUPPORTED_VERSION
+    big_uint32_t max_table_entries; ///< The maximum number of entries in the block allocation table.
+    big_uint32_t block_size; ///< The size, in bytes, of a block on the disk.
+    big_uint32_t checksum; ///< One's complement of the sum of all the bytes in this header.
+    uint8_t parent_unique_id[16]; ///< Unusued in dynamic disks.
+    big_uint32_t parent_time_stamp; ///< Should be set to the modification time of this disk, but we ignore.
+    big_uint32_t reserved_1; ///< Reserved.
+    uint8_t parent_unicode_name[512]; ///< Unused for dynamic disks.
+    vhd_parent_locator parent_locators[8]; ///< Unused for dynamic disks.
+    uint8_t reserved_2[256]; ///< Reserved.
   };
   static_assert(sizeof(vhd_dynamic_header) == 1024, "Sizeof vhd_dynamic_header wrong");
 #pragma pack (pop)
@@ -95,6 +99,7 @@ namespace virt_disk
     ~vhd_disk() { };
 
     virtual void read(void *buffer, uint64_t start_posn, uint64_t length, uint64_t buffer_length) override;
+    virtual void write(const void *buffer, uint64_t start_posn, uint64_t length, uint64_t buffer_length) override;
 
     virtual uint64_t get_length() override;
 

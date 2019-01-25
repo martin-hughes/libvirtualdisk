@@ -99,6 +99,11 @@ namespace virt_disk
     }
   }
 
+  void vdi_disk::write(const void *buffer, uint64_t start_posn, uint64_t length, uint64_t buffer_length)
+  {
+    throw std::fstream::failure("Not implemented");
+  }
+
   /// @brief Read a complete or partial block from the disk.
   ///
   /// VDI files are stored on disk in "blocks" that may be out-of-order, which means it is easiest to just attempt to

@@ -101,6 +101,7 @@ namespace virt_disk
     ~vdi_disk() { };
 
     virtual void read(void *buffer, uint64_t start_posn, uint64_t length, uint64_t buffer_length) override;
+    virtual void write(const void *buffer, uint64_t start_posn, uint64_t length, uint64_t buffer_length) override;
 
     virtual uint64_t get_length() override;
 
